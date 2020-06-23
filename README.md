@@ -24,8 +24,8 @@ This script logs [restic backup](https://restic.net/) tasks to Zabbix, when usin
   ```bash
   mkdir -p /etc/zabbix/scripts
   cd /etc/zabbix/scripts
-  curl -O https://raw.githubusercontent.com/sebastian13/zabbix-templates/master/rescript-restic-backup/scripts/log-rescript.sh
-  curl -O https://raw.githubusercontent.com/sebastian13/zabbix-templates/master/rescript-restic-backup/scripts/rescript-repo-discovery.pl
+  curl -O https://raw.githubusercontent.com/sebastian13/zabbix-template-rescript/master/scripts/log-rescript.sh
+  curl -O https://github.com/sebastian13/zabbix-template-rescript/blob/master/scripts/rescript-repo-discovery.pl
   chmod +x log-rescript.sh rescript-repo-discovery.pl
   ``` 
 
