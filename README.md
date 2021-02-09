@@ -1,5 +1,7 @@
 # Zabbix Template: Rescript Restic Backup
 
+![](https://img.shields.io/badge/Zabbix-5.2.4-blue) ![](https://img.shields.io/badge/Rescript-4.6-blue) ![](https://img.shields.io/badge/Restic-0.11.0-blue) 
+
 This script logs [restic backup](https://restic.net/) tasks to Zabbix, when using the [rescript wrapper](https://gitlab.com/sulfuror/rescript.sh). It's capable of logging various output values of backup, check and forget & prune tasks.
 
 ## Screenshots
@@ -72,6 +74,10 @@ This script logs [restic backup](https://restic.net/) tasks to Zabbix, when usin
 	source /etc/zabbix/scripts/log-rescript.sh
 	
 	```
+
+## Adjust Triggers
+
+- A notification will be sent, if no snapshot id is received for >52h. The macro `{$TRIGGER_NOBACKUPTIME}` can be changed to any other timeframe. `{$TRIGGER_NOBACKUPTIME_LVM}` if using LVM Backup.
 
 ## Rescript LVM Backup Monitoring
 

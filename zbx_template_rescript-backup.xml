@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>4.4</version>
-    <date>2020-01-04T10:26:22Z</date>
+    <version>5.2</version>
+    <date>2021-02-09T15:23:38Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -32,7 +32,7 @@
                             <units>B</units>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Restic Backup of {#LV} to {#REPO}</name>
+                                    <name>Restic LV Backup of {#LV}</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -44,7 +44,7 @@
                             <units>B</units>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Restic Backup of {#LV} to {#REPO}</name>
+                                    <name>Restic LV Backup of {#LV}</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -56,7 +56,7 @@
                             <units>s</units>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Restic Backup of {#LV} to {#REPO}</name>
+                                    <name>Restic LV Backup of {#LV}</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -69,12 +69,12 @@
                             <value_type>CHAR</value_type>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Restic Backup of {#LV} to {#REPO}</name>
+                                    <name>Restic LV Backup of {#LV}</name>
                                 </application_prototype>
                             </application_prototypes>
                             <trigger_prototypes>
                                 <trigger_prototype>
-                                    <expression>{nodata(2d)}=1</expression>
+                                    <expression>{nodata({$TRIGGER_NOBACKUPTIME_LVM})}=1</expression>
                                     <name>Restic LVM Backup of {#LV} to {#REPO} is outstanding on {HOST.NAME}</name>
                                     <priority>WARNING</priority>
                                 </trigger_prototype>
@@ -139,7 +139,7 @@
                             </application_prototypes>
                             <trigger_prototypes>
                                 <trigger_prototype>
-                                    <expression>{nodata(2d)}=1</expression>
+                                    <expression>{nodata({$TRIGGER_NOBACKUPTIME})}=1</expression>
                                     <name>Rescript Restic Backup on {HOST.NAME} to {#REPO} is outstanding</name>
                                     <priority>WARNING</priority>
                                 </trigger_prototype>
@@ -267,6 +267,16 @@
                     </item_prototypes>
                 </discovery_rule>
             </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$TRIGGER_NOBACKUPTIME}</macro>
+                    <value>52h</value>
+                </macro>
+                <macro>
+                    <macro>{$TRIGGER_NOBACKUPTIME_LVM}</macro>
+                    <value>52h</value>
+                </macro>
+            </macros>
         </template>
     </templates>
 </zabbix_export>
