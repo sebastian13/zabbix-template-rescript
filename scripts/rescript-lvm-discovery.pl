@@ -26,7 +26,7 @@ for (@repos) { s/.conf//; };
 
 # Get the names of all Logical Volumes
 # Exclude Snapshots and LV name containing swap or *swp
-my @lv_names = `lvs --noheading -o lv_name -S 'lv_attr !~ ^s' | grep -v -e 'swap' -e 'swp' | tr -d '  '`;
+my @lv_names = `lvs --noheading -o lv_name --select "lv_attr!~[^s],lv_name!~[cache\$|swap\$|swp\$|tmp\$]" | tr -d '  '`;
 # Delete Empty Lines
 chomp @lv_names;
 
