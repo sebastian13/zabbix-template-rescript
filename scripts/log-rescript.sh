@@ -117,7 +117,8 @@ log-prune () {
 	echo "Remaining Size:           $RLOG_PRUNE_REMAINING_SIZE"
 
 	# Unused Size
-	RLOG_PRUNE_UNUSED_SIZE=$(cat $RLOG | grep "unused size after prune:" | awk '{print $5,$6}')
+	RLOG_PRUNE_UNUSED_SIZE=$(cat $RLOG | grep "unused size after prune:" | awk '{print $5,$6}'| \
+			/usr/bin/python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
 	arr+=("- rescript.prune.unused.size[$REPO] $TIME $RLOG_PRUNE_UNUSED_SIZE")
 	echo "Unused size after prune:  $RLOG_PRUNE_UNUSED_SIZE"
 
