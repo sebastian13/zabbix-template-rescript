@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.2</version>
-    <date>2021-02-09T15:23:38Z</date>
+    <date>2021-03-16T10:39:08Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -184,32 +184,9 @@
                             </trigger_prototypes>
                         </item_prototype>
                         <item_prototype>
-                            <name>Rescript Prune: Number of Packs Deleted ({#REPO})</name>
+                            <name>Rescript Prune: Number of Packs Removed ({#REPO})</name>
                             <type>TRAP</type>
-                            <key>rescript.prune.delpacks[{#REPO}]</key>
-                            <delay>0</delay>
-                            <application_prototypes>
-                                <application_prototype>
-                                    <name>Rescript Restic Backup: {#REPO}</name>
-                                </application_prototype>
-                            </application_prototypes>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Rescript Prune: Freed Space ({#REPO})</name>
-                            <type>TRAP</type>
-                            <key>rescript.prune.freedspace[{#REPO}]</key>
-                            <delay>0</delay>
-                            <units>B</units>
-                            <application_prototypes>
-                                <application_prototype>
-                                    <name>Rescript Restic Backup: {#REPO}</name>
-                                </application_prototype>
-                            </application_prototypes>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Rescript Prune: Number of Packs ({#REPO})</name>
-                            <type>TRAP</type>
-                            <key>rescript.prune.packs[{#REPO}]</key>
+                            <key>rescript.prune.packs.removed[{#REPO}]</key>
                             <delay>0</delay>
                             <application_prototypes>
                                 <application_prototype>
@@ -231,10 +208,11 @@
                             </application_prototypes>
                         </item_prototype>
                         <item_prototype>
-                            <name>Rescript Prune: Invalid Files Removed ({#REPO})</name>
+                            <name>Rescript Prune: Remaining Size ({#REPO})</name>
                             <type>TRAP</type>
-                            <key>rescript.prune.remfiles[{#REPO}]</key>
+                            <key>rescript.prune.remaining.size[{#REPO}]</key>
                             <delay>0</delay>
+                            <units>B</units>
                             <application_prototypes>
                                 <application_prototype>
                                     <name>Rescript Restic Backup: {#REPO}</name>
@@ -242,20 +220,9 @@
                             </application_prototypes>
                         </item_prototype>
                         <item_prototype>
-                            <name>Rescript Prune: Number of Packs Rewritten ({#REPO})</name>
+                            <name>Rescript Prune: Unused Size after Prune ({#REPO})</name>
                             <type>TRAP</type>
-                            <key>rescript.prune.rewpacks[{#REPO}]</key>
-                            <delay>0</delay>
-                            <application_prototypes>
-                                <application_prototype>
-                                    <name>Rescript Restic Backup: {#REPO}</name>
-                                </application_prototype>
-                            </application_prototypes>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>Rescript Prune: Total Size ({#REPO})</name>
-                            <type>TRAP</type>
-                            <key>rescript.prune.size[{#REPO}]</key>
+                            <key>rescript.prune.unused.size[{#REPO}]</key>
                             <delay>0</delay>
                             <units>B</units>
                             <application_prototypes>

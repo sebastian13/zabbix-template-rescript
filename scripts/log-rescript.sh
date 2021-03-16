@@ -94,44 +94,37 @@ then
   echo
 fi
 
+#
 # Log Restic Forget & Prune
+
+# to repack:           69 blobs / 1.078 MiB
+# this removes         67 blobs / 1.047 MiB
+# to delete:            7 blobs / 25.726 KiB
+# total prune:         74 blobs / 1.072 MiB
+# remaining:           16 blobs / 38.003 KiB
+# unused size after prune: 0 B (0.00% of remaining size)
+
 log-prune () {
 	# Save set policy
 	RLOG_PRUNE_POLICY=$(cat $RLOG | grep "Applying Policy:" | sed 's/Applying Policy: //')
 	arr+=("- rescript.prune.policy[$REPO] $TIME $RLOG_PRUNE_POLICY")
-	echo "Policy:           $RLOG_PRUNE_POLICY"
+	echo "Policy:                   $RLOG_PRUNE_POLICY"
 
-	# Number of packs in repo
-	RLOG_PRUNE_PACKS=$(cat $RLOG | grep "repository contains.*packs" | awk '{print $3}')
-	arr+=("- rescript.prune.packs[$REPO] $TIME $RLOG_PRUNE_PACKS")
-	echo "Contained Packs:  $RLOG_PRUNE_PACKS"
-
-	# Size of Repo
-	RLOG_PRUNE_SIZE=$(cat $RLOG | grep "repository contains.*packs" | awk '{print $(NF-1), $NF}' | \
+	# Remaining Size
+	RLOG_PRUNE_REMAINING_SIZE=$(cat $RLOG | grep "remaining:" | awk '{print $(NF-1), $NF}' | \
 			/usr/bin/python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
-	arr+=("- rescript.prune.size[$REPO] $TIME $RLOG_PRUNE_SIZE")
-	echo "Repo's Size:      $RLOG_PRUNE_SIZE"
+	arr+=("- rescript.prune.remaining.size[$REPO] $TIME $RLOG_PRUNE_REMAINING_SIZE")
+	echo "Remaining Size:           $RLOG_PRUNE_REMAINING_SIZE"
 
-	# Removed files
-	RLOG_PRUNE_REMFILES=$(cat $RLOG | grep "will remove .* invalid files" | awk '{print $3}')
-	arr+=("- rescript.prune.remfiles[$REPO] $TIME $RLOG_PRUNE_REMFILES")
-	echo "Files removed:    $RLOG_PRUNE_REMFILES"
+	# Unused Size
+	RLOG_PRUNE_UNUSED_SIZE=$(cat $RLOG | grep "unused size after prune:" | awk '{print $5,$6}')
+	arr+=("- rescript.prune.unused.size[$REPO] $TIME $RLOG_PRUNE_UNUSED_SIZE")
+	echo "Unused size after prune:  $RLOG_PRUNE_UNUSED_SIZE"
 
-	# Deleted packs
-	RLOG_PRUNE_DELPACKS=$(cat $RLOG | grep "will delete .* packs and rewrite .* packs, this frees .*" | awk '{print $3}')
-	arr+=("- rescript.prune.delpacks[$REPO] $TIME $RLOG_PRUNE_DELPACKS")
-	echo "Packs deleted:    $RLOG_PRUNE_DELPACKS"
-
-	# Rewritten packs
-	RLOG_PRUNE_REWPACKS=$(cat $RLOG | grep "will delete .* packs and rewrite .* packs, this frees .*" | awk '{print $7}')
-	arr+=("- rescript.prune.rewpacks[$REPO] $TIME $RLOG_PRUNE_REWPACKS")
-	echo "Packs rewritten:  $RLOG_PRUNE_REWPACKS"
-
-	# Freed space
-	RLOG_PRUNE_FREEDSPACE=$(cat $RLOG | grep "will delete .* packs and rewrite .* packs, this frees .*" | awk '{print $(NF-1), $NF}' | \
-			/usr/bin/python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
-	arr+=("- rescript.prune.freedspace[$REPO] $TIME $RLOG_PRUNE_FREEDSPACE")
-	echo "Freed space:      $RLOG_PRUNE_FREEDSPACE"
+	# Old Packs
+	RLOG_PRUNE_PACKS_REMOVED=$(cat $RLOG | grep "removing .* old packs" | awk '{print $2}')
+	arr+=("- rescript.prune.packs.removed[$REPO] $TIME $RLOG_PRUNE_PACKS_REMOVED")
+	echo "Packs removed:            $RLOG_PRUNE_PACKS_REMOVED"
 }
 
 # Check if restic forget & prune was run
