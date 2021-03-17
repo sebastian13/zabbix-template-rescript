@@ -124,8 +124,10 @@ log-prune () {
 
 	# Old Packs
 	RLOG_PRUNE_PACKS_REMOVED=$(cat $RLOG | grep "removing .* old packs" | awk '{print $2}')
-	arr+=("- rescript.prune.packs.removed[$REPO] $TIME $RLOG_PRUNE_PACKS_REMOVED")
-	echo "Packs removed:            $RLOG_PRUNE_PACKS_REMOVED"
+	if [ -n "$RLOG_PRUNE_PACKS_REMOVED" ]; then
+		arr+=("- rescript.prune.packs.removed[$REPO] $TIME $RLOG_PRUNE_PACKS_REMOVED")
+		echo "Packs removed:            $RLOG_PRUNE_PACKS_REMOVED"
+	fi
 }
 
 # Check if restic forget & prune was run
