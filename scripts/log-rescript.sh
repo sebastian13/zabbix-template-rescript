@@ -24,9 +24,19 @@ cecho () {
 black=0; red=1; green=2; yellow=3; blue=4; pink=5; cyan=6; white=7;
 
 # Look for rescript config files & create items on Zabbix Server
+if [[ -f "/etc/zabbix/zabbix_agent2.conf" ]]
+then
+	ZBX_CONFIG="/etc/zabbix/zabbix_agent2.conf"
+elif [[ -f "/etc/zabbix/zabbix_agentd.conf" ]]
+then
+	ZBX_CONFIG="/etc/zabbix/zabbix_agentd.conf"
+else 
+  echo "No zabbix config file found."
+fi
+
 cecho $yellow "[Running discovery of rescript repos]"
 REPODISC=$(/etc/zabbix/scripts/rescript-repo-discovery.pl /root/.rescript/config/)
-zabbix_sender --config /etc/zabbix/zabbix_agentd.conf --key "rescript.repo.discovery[discoverrepos]" --value "$REPODISC"
+zabbix_sender --config $ZBX_CONFIG --key "rescript.repo.discovery[discoverrepos]" --value "$REPODISC"
 echo
 
 # Identify the most recent rescript-log
@@ -142,7 +152,8 @@ cecho $yellow "[Sending everything to Zabbix]"
 # for ix in ${!arr[*]}; do printf "%s\n" "${arr[$ix]}"; done
 # echo
 send-to-zabbix () {
-	for ix in ${!arr[*]}; do printf "%s\n" "${arr[$ix]}"; done | zabbix_sender --config /etc/zabbix/zabbix_agentd.conf --with-timestamps --input-file -
+	for ix in ${!arr[*]}; do printf "%s\n" "${arr[$ix]}"; done | \
+		zabbix_sender --config $ZBX_CONFIG --with-timestamps --input-file -
 }
 
 # Send Data
