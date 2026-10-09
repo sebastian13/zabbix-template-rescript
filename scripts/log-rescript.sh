@@ -39,10 +39,10 @@ REPODISC=$(/etc/zabbix/scripts/rescript-repo-discovery.pl /root/.rescript/config
 zabbix_sender --config $ZBX_CONFIG --key "rescript.repo.discovery[discoverrepos]" --value "$REPODISC"
 echo
 
-# Identify the most recent rescript-log
-RLOG=$(find /root/.rescript/logs/ -type f | xargs ls -tr | tail -n 1)
-REPO=$(echo $RLOG | sed 's/.*\/logs\///' | sed 's/-backup-log-.*//; s/-cleanup-log-.*//; s/-log-.*//;')
-TIME=$(stat -c '%015Y' $RLOG)
+# Identify the most recent rescript-log by modification time (numeric sort, not xargs/ls parsing)
+RLOG=$(find /root/.rescript/logs/ -type f -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)
+REPO=$(echo "$RLOG" | sed 's#.*\/logs/##' | sed 's/-backup-log-.*//; s/-cleanup-log-.*//; s/-log-.*//;')
+TIME=$(stat -c '%015Y' "$RLOG")
 
 echo "Extracting from:  $RLOG"
 echo "Repository:       $REPO"
