@@ -78,7 +78,7 @@ log-backup () {
 			     awk '{print $4,$5}' | \
 			     python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))'  )
 	arr+=("- rescript.backup.processedbytes[$REPO] $TIME $RLOG_PROCESSED_BYTES")
-	echo "Bytes Processed:  $RLOG_PROCESSED_TIME"
+	echo "Bytes Processed:  $RLOG_PROCESSED_BYTES"
 }
 
 # Check if restic backup was run
@@ -91,7 +91,7 @@ fi
 
 # Log Restic Check
 log-check () {
-	RLOG_CHECK_RESULT=$( grep "no errors were found" $RLOG ) || RLOG_CHECK_RESULT=$(grep "ciphertext verification failed" $LOG)
+	RLOG_CHECK_RESULT=$(grep "no errors were found" "$RLOG") || RLOG_CHECK_RESULT=$(grep "ciphertext verification failed" "$RLOG")
 	arr+=("- rescript.check.message[$REPO] $TIME $RLOG_CHECK_RESULT")
 	echo "Checking Result:  $RLOG_CHECK_RESULT"
 }
