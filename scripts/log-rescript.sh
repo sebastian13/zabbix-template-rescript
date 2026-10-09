@@ -10,6 +10,28 @@ echo
 
 arr=()
 
+# Check package availability
+command -v zabbix_sender >/dev/null 2>&1 || { echo "[Error] Please install zabbix-sender"; exit 1; }
+command -v restic >/dev/null 2>&1 || { echo "[Error] Please install restic"; exit 1; }
+command -v rescript >/dev/null 2>&1 || { echo "[Error] Please install rescript"; exit 1; }
+
+human-to-bytes () {
+  local value unit bytes
+  value=$(printf '%s\n' "$1" | sed -E 's/([0-9.]+).*/\1/')
+  unit=$(printf '%s\n' "$1" | sed -E 's/.* ([A-Za-z]+)$/\1/')
+
+  case "$unit" in
+    B|b) bytes=$(awk "BEGIN { printf \"%.0f\", $value }") ;;
+    KiB|Ki|K) bytes=$(awk "BEGIN { printf \"%.0f\", $value * 1024 }") ;;
+    MiB|Mi|M) bytes=$(awk "BEGIN { printf \"%.0f\", $value * (1024^2) }") ;;
+    GiB|Gi|G) bytes=$(awk "BEGIN { printf \"%.0f\", $value * (1024^3) }") ;;
+    TiB|Ti|T) bytes=$(awk "BEGIN { printf \"%.0f\", $value * (1024^4) }") ;;
+    *) bytes=0 ;;
+  esac
+
+  printf '%s\n' "$bytes"
+}
+
 # Define various output colors
 cecho () {
   local _color=$1; shift
@@ -61,8 +83,7 @@ log-backup () {
 	echo "Snapshot ID:      $RLOG_SNAPSHOTID"
 
 	# Extract Added Bytes
-	RLOG_ADDED=$(cat $RLOG | grep 'Added to the repo' | awk '{print $5,$6}' | \
-		python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
+	RLOG_ADDED=$(cat "$RLOG" | grep 'Added to the repo' | awk '{print $5 " " $6}' | while read -r value unit; do human-to-bytes "$value $unit"; done)
 	arr+=("- rescript.backup.added[$REPO] $TIME $RLOG_ADDED")
 	echo "Bytes Added:      $RLOG_ADDED"
 
@@ -74,9 +95,8 @@ log-backup () {
 	echo "Time Processed:   $RLOG_PROCESSED_TIME"
 
 	# Extract Processed Bytes
-	RLOG_PROCESSED_BYTES=$(cat $RLOG | grep '^processed.*files' | \
-			     awk '{print $4,$5}' | \
-			     python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))'  )
+	RLOG_PROCESSED_BYTES=$(cat "$RLOG" | grep '^processed.*files' | \
+			     awk '{print $4 " " $5}' | while read -r value unit; do human-to-bytes "$value $unit"; done)
 	arr+=("- rescript.backup.processedbytes[$REPO] $TIME $RLOG_PROCESSED_BYTES")
 	echo "Bytes Processed:  $RLOG_PROCESSED_BYTES"
 }
@@ -121,14 +141,12 @@ log-prune () {
 	echo "Policy:                   $RLOG_PRUNE_POLICY"
 
 	# Remaining Size
-	RLOG_PRUNE_REMAINING_SIZE=$(cat $RLOG | grep "remaining:" | awk '{print $(NF-1), $NF}' | \
-			/usr/bin/python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
+	RLOG_PRUNE_REMAINING_SIZE=$(cat "$RLOG" | grep "remaining:" | awk '{print $(NF-1) " " $NF}' | while read -r value unit; do human-to-bytes "$value $unit"; done)
 	arr+=("- rescript.prune.remaining.size[$REPO] $TIME $RLOG_PRUNE_REMAINING_SIZE")
 	echo "Remaining Size:           $RLOG_PRUNE_REMAINING_SIZE"
 
 	# Unused Size
-	RLOG_PRUNE_UNUSED_SIZE=$(cat $RLOG | grep "unused size after prune:" | awk '{print $5,$6}'| \
-			/usr/bin/python3 -c 'import sys; import humanfriendly; print (humanfriendly.parse_size(sys.stdin.read(), binary=True))' )
+	RLOG_PRUNE_UNUSED_SIZE=$(cat "$RLOG" | grep "unused size after prune:" | awk '{print $5 " " $6}' | while read -r value unit; do human-to-bytes "$value $unit"; done)
 	arr+=("- rescript.prune.unused.size[$REPO] $TIME $RLOG_PRUNE_UNUSED_SIZE")
 	echo "Unused size after prune:  $RLOG_PRUNE_UNUSED_SIZE"
 
